@@ -1,0 +1,12 @@
+{
+  "development": {
+    "use_env_variable": "DB_LINK",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  }
+}
