@@ -7,12 +7,12 @@ const postLikeStatusResolver = async (_, { recipe_id }, context) => {
         }
     });
 
-    const count2 = await db.Like.count({
+    const count2 = context?.user_id ? await db.Like.count({
         where: {
             recipe_id: recipe_id,
             user_id: context.user_id,
         }
-    });
+    }) : 0;
 
     return {
         count: count1,

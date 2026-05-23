@@ -9,6 +9,32 @@
 4. Run ```npm start``` to start the server
 5. Run ```npm run dev``` for local development with auto-reload
 
+# Frontend
+
+1. Go to the React app: ```cd frontend```
+2. Install dependencies: ```npm i```
+3. Optionally create a frontend env file from ```frontend/.env.example```
+4. Start the frontend: ```npm run dev```
+5. The dev server proxies GraphQL requests to ```http://localhost:3000/graphql```
+
+Useful root-level shortcuts:
+- ```npm run frontend:dev```
+- ```npm run frontend:build```
+
+# Demo data
+
+Run this after migrations to populate the app with demo users, tags, recipes, likes, and comments:
+
+``` npm run seed:demo ```
+
+Demo users:
+- ```ana.demo@example.com```
+- ```mihai.demo@example.com```
+- ```irina.demo@example.com```
+
+All demo users use this password:
+``` Demo123456! ```
+
 # Migrations
 1. Make sure the project setup is finished
 2. To create a model run ```npx sequelize-cli model:generate --name <model name> --attributes <list of attributes and type>```, for instance ```npx sequelize-cli model:generate --name User --attributes firstName:string,lastName:string,email:string,userName:string```

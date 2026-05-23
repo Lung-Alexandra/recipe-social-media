@@ -4,6 +4,10 @@ const db = require('../../../models');
 const updateUserResolver = async (_, args , context) => {
   
   try {
+    if (!context?.user_id) {
+      throw new Error('Authentication required');
+    }
+
     const {user} = args;
     const { username, email, password, profile_picture, bio, date_joined } = user;
     const user_id = context.user_id;

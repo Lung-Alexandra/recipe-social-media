@@ -1,15 +1,21 @@
 const db = require('../../../models');
 
 const likePostResolver = async (_, { recipe_id }, context) => {
-    date_liked = new Date();
-    let user_id = context.user_id;
-    const newLike = await db.Like.create({
-        user_id,
-        recipe_id,
-        date_liked,
+    if (!context?.user_id) {
+        throw new Error('Authentication required');
+    }
+
+    const [like] = await db.Like.findOrCreate({
+        where: {
+            user_id: context.user_id,
+            recipe_id,
+        },
+        defaults: {
+            date_liked: new Date(),
+        },
     });
-  
-    return newLike;
+
+    return like;
 }
 
 module.exports = likePostResolver;

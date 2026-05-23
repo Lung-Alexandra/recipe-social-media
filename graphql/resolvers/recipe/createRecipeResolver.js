@@ -3,6 +3,10 @@ const db = require('../../../models');
 
 
 const createRecipeResolver = async (_, { recipe },context) => {
+    if (!context?.user_id) {
+        throw new Error('Authentication required');
+    }
+
     const { title,
         description,
         ingredients,
@@ -22,14 +26,16 @@ const createRecipeResolver = async (_, { recipe },context) => {
         user_id:context.user_id
     });
 
-    let {tags} = recipe
+    let {tags = []} = recipe
     // Fetch the latest recipe ID
     const latestRecipeId = await newRecipe.id;
 
     if (latestRecipeId !== null) {
-        tags = await db.Tag.findAll({
-            where: { tag_name: tags },
-        });
+        tags = tags.length
+            ? await db.Tag.findAll({
+                where: { tag_name: tags },
+            })
+            : [];
 
         // Fetch existing associations for the latest recipe
         const existingAssociations = await db.RecipeTag.findAll({

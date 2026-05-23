@@ -1,6 +1,10 @@
 const db = require('../../../models');
 
 const unlikePostResolver = async (_, { recipe_id }, context) => {
+    if (!context?.user_id) {
+        throw new Error('Authentication required');
+    }
+
     const {count, rows} = await db.Like.findAndCountAll(
         {where: {
             user_id: context.user_id,

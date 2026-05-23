@@ -5,13 +5,13 @@ const {
 } = require('graphql');
 const UserType = require('../../types/user/userType');
 const updateUserResolver = require('../../resolvers/user/updateUserResolver');
-const userInputType = require('../../types/user/userInputType');
+const userUpdateInputType = require('../../types/user/userUpdateInputType');
 
 const updateUser = {
     type: UserType,
     args: {
         user: {
-            type: userInputType,
+            type: userUpdateInputType,
         },
     },
     resolve: updateUserResolver,

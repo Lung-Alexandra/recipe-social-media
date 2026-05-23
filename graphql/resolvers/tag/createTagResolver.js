@@ -1,13 +1,24 @@
 const db = require('../../../models');
 
 const createTagResolver = async (_, { tag }) => {
-    const  {tag_name}  = tag;
-    const newTag = await db.Tag.create({
-        tag_name,
+    const tagName = tag?.tag_name?.trim();
+
+    if (!tagName) {
+        throw new Error('Tag name is required');
+    }
+
+    const existingTag = await db.Tag.findOne({
+        where: db.Sequelize.where(
+            db.Sequelize.fn('lower', db.Sequelize.col('tag_name')),
+            tagName.toLowerCase()
+        ),
     });
 
-    console.log('tag aici');
-    return newTag;
+    if (existingTag) return existingTag;
+
+    return await db.Tag.create({
+        tag_name: tagName,
+    });
 }
 
 module.exports = createTagResolver;

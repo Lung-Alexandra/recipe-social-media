@@ -1,3 +1,6 @@
 node_modules
 .env
 .idea
+frontend/node_modules
+frontend/dist
+original-47d79aeef2b6c2f3d94914d2ecfda559.gif

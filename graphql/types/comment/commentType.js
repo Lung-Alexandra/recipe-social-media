@@ -4,6 +4,8 @@ const {
     GraphQLString
 } = require('graphql');
 const GraphQLDate = require('graphql-date');
+const db = require('../../../models');
+const UserType = require('../user/userType');
 
 const CommentType = new GraphQLObjectType({
     name: 'Comment',
@@ -22,6 +24,12 @@ const CommentType = new GraphQLObjectType({
       },
       comment_text: {
         type: GraphQLString
+      },
+      author: {
+        type: UserType,
+        async resolve(parent) {
+          return await db.User.findByPk(parent.user_id);
+        },
       }
     })
 });

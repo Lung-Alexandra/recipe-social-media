@@ -12,6 +12,9 @@ const createRecipeResolver = async (_, args, context) => {
             throw new Error('Permission denied');
         }
 
+        await db.Comment.destroy({ where: { recipe_id: id } });
+        await db.Like.destroy({ where: { recipe_id: id } });
+        await db.RecipeTag.destroy({ where: { recipe_id: id } });
         await targetRecipe.destroy();
 
         return true;

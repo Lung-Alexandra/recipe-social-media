@@ -2,10 +2,8 @@ const db = require('../../../models');
 
 const updateRecipeResolver = async (_, args,context) => {
 
-    console.log(args)
     const { id,recipe } = args;
     try {
-        console.log(recipe)
         const {
             title,
             description,
@@ -13,6 +11,7 @@ const updateRecipeResolver = async (_, args,context) => {
             instructions,
             imageUrl,
             dateCreated,
+            tags,
         } = recipe;
 
         const targetRecipe = await db.Recipe.findByPk(id);
@@ -30,9 +29,26 @@ const updateRecipeResolver = async (_, args,context) => {
         if (ingredients !== undefined) targetRecipe.ingredients = ingredients;
         if (instructions !== undefined) targetRecipe.instructions = instructions;
         if (imageUrl !== undefined) targetRecipe.imageUrl = imageUrl;
-        if (dateCreated !== undefined) targetRecipe.date_created = dateCreated;
+        if (dateCreated !== undefined) targetRecipe.dateCreated = dateCreated;
 
         await targetRecipe.save();
+
+        if (Array.isArray(tags)) {
+            const nextTags = tags.length
+                ? await db.Tag.findAll({ where: { tag_name: tags } })
+                : [];
+
+            await db.RecipeTag.destroy({ where: { recipe_id: id } });
+
+            if (nextTags.length > 0) {
+                await db.RecipeTag.bulkCreate(
+                    nextTags.map((tag) => ({
+                        recipe_id: id,
+                        tag_id: tag.id,
+                    }))
+                );
+            }
+        }
 
         return targetRecipe;
     } catch (error) {
