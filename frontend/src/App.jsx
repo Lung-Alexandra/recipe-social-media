@@ -46,7 +46,6 @@ function App() {
   if (!auth.isAuthenticated) {
     return (
       <AuthScreen
-        authError={auth.authError}
         isLoading={auth.isAuthLoading}
         onLogin={auth.login}
         onSignup={auth.signup}

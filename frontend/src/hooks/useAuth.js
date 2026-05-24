@@ -32,6 +32,17 @@ export function useAuth() {
   const userId = decodedToken?.user_id ? String(decodedToken.user_id) : '';
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+    const oauthToken = url.searchParams.get('token');
+
+    if (!oauthToken) return;
+
+    setToken(oauthToken);
+    url.searchParams.delete('token');
+    window.history.replaceState({}, document.title, url.toString());
+  }, []);
+
+  useEffect(() => {
     if (token) {
       window.localStorage.setItem(tokenStorageKey, token);
     } else {
@@ -74,7 +85,7 @@ export function useAuth() {
     return data?.user || null;
   }
 
-  async function login(credentials) {
+  async function login(credentials, options = {}) {
     setIsAuthLoading(true);
     setAuthError('');
 
@@ -89,7 +100,9 @@ export function useAuth() {
       setToken(nextToken);
       return nextToken;
     } catch (error) {
-      setAuthError(error.message);
+      if (!options.silentError) {
+        setAuthError(error.message);
+      }
       throw error;
     } finally {
       setIsAuthLoading(false);
@@ -105,7 +118,7 @@ export function useAuth() {
       return await login({
         email: user.email,
         password: user.password,
-      });
+      }, { silentError: true });
     } catch (error) {
       setAuthError(error.message);
       throw error;

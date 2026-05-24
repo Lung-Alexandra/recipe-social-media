@@ -21,6 +21,27 @@ Useful root-level shortcuts:
 - ```npm run frontend:dev```
 - ```npm run frontend:build```
 
+# OAuth2 login
+
+Google OAuth2 is available through the backend.
+
+Required backend `.env` fields:
+
+```env
+GOOGLE_CLIENT_ID="your-google-oauth-client-id"
+GOOGLE_CLIENT_SECRET="your-google-oauth-client-secret"
+GOOGLE_CALLBACK_URL="http://localhost:3000/auth/google/callback"
+OAUTH_SUCCESS_REDIRECT="http://localhost:5173"
+```
+
+In Google Cloud Console, add this authorized redirect URI:
+
+```text
+http://localhost:3000/auth/google/callback
+```
+
+The React app calls `/auth/google`, the backend handles the OAuth callback, creates or finds the user by verified email, signs the app JWT, then redirects back to the frontend.
+
 # Demo data
 
 Run this after migrations to populate the app with demo users, tags, recipes, likes, and comments:

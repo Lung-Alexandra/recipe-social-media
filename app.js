@@ -23,6 +23,9 @@ app.use(cors({
 app.use(express.json());
 
 const checkAuthorization = require("./middleware/authorization")
+const oauthRoutes = require('./routes/oauth');
+
+app.use('/auth', oauthRoutes);
 
 app.all('/graphql', checkAuthorization, createHandler({
     schema,

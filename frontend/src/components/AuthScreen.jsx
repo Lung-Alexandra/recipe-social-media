@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Icon } from './Icon.jsx';
 
 const emptySignupForm = {
@@ -10,7 +10,6 @@ const emptySignupForm = {
 };
 
 export function AuthScreen({
-  authError,
   isLoading,
   onLogin,
   onSignup,
@@ -18,22 +17,62 @@ export function AuthScreen({
   theme,
 }) {
   const [mode, setMode] = useState('login');
+  const [errors, setErrors] = useState({ login: '', signup: '' });
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [signupForm, setSignupForm] = useState(emptySignupForm);
+  const currentError = errors[mode];
+
+  useEffect(() => {
+    if (!currentError) return undefined;
+
+    const clearTimer = window.setTimeout(() => {
+      setErrors((current) => ({ ...current, [mode]: '' }));
+    }, 10000);
+
+    return () => window.clearTimeout(clearTimer);
+  }, [currentError, mode]);
+
+  function changeMode(nextMode) {
+    setMode(nextMode);
+    setErrors({ login: '', signup: '' });
+  }
 
   async function submitLogin(event) {
     event.preventDefault();
-    await onLogin(loginForm);
+    setErrors((current) => ({ ...current, login: '' }));
+
+    try {
+      await onLogin(loginForm);
+    } catch {
+      setErrors((current) => ({
+        ...current,
+        login:
+          'We could not sign you in. Please check your email and password.',
+      }));
+    }
   }
 
   async function submitSignup(event) {
     event.preventDefault();
-    await onSignup({
-      ...signupForm,
-      profile_picture: signupForm.profile_picture || null,
-      bio: signupForm.bio || null,
-    });
-    setSignupForm(emptySignupForm);
+    setErrors((current) => ({ ...current, signup: '' }));
+
+    try {
+      await onSignup({
+        ...signupForm,
+        profile_picture: signupForm.profile_picture || null,
+        bio: signupForm.bio || null,
+      });
+      setSignupForm(emptySignupForm);
+    } catch (error) {
+      setErrors((current) => ({
+        ...current,
+        signup: getSignupErrorMessage(error),
+      }));
+    }
+  }
+
+  function continueWithGoogle() {
+    window.location.assign('/auth/google');
   }
 
   return (
@@ -75,14 +114,14 @@ export function AuthScreen({
             <button
               type="button"
               className={mode === 'login' ? 'active' : ''}
-              onClick={() => setMode('login')}
+              onClick={() => changeMode('login')}
             >
               Login
             </button>
             <button
               type="button"
               className={mode === 'signup' ? 'active' : ''}
-              onClick={() => setMode('signup')}
+              onClick={() => changeMode('signup')}
             >
               Sign up
             </button>
@@ -90,6 +129,17 @@ export function AuthScreen({
 
           {mode === 'login' ? (
             <form className="stack-form" onSubmit={submitLogin}>
+              <button
+                type="button"
+                className="secondary-button oauth-button"
+                onClick={continueWithGoogle}
+              >
+                <Icon name="google" />
+                Continue with Google
+              </button>
+              <div className="auth-divider">
+                <span>or use email</span>
+              </div>
               <Field
                 label="Email"
                 type="email"
@@ -115,6 +165,17 @@ export function AuthScreen({
             </form>
           ) : (
             <form className="stack-form" onSubmit={submitSignup}>
+              <button
+                type="button"
+                className="secondary-button oauth-button"
+                onClick={continueWithGoogle}
+              >
+                <Icon name="google" />
+                Continue with Google
+              </button>
+              <div className="auth-divider">
+                <span>or create with email</span>
+              </div>
               <Field
                 label="Username"
                 value={signupForm.username}
@@ -149,12 +210,23 @@ export function AuthScreen({
           )}
           
         </div>
-        <div className="auth-error" role="alert" style={{ minHeight: '1.5em', visibility: authError ? 'visible' : 'hidden'}}>
-          {authError ? <p className="form-error">{authError}</p> : null}
+        <div
+          className="auth-error"
+          role="alert"
+          style={{
+            minHeight: '1.5em',
+            visibility: currentError ? 'visible' : 'hidden',
+          }}
+        >
+          {currentError ? <p className="form-error">{currentError}</p> : null}
         </div>
       </section>
     </main>
   );
+}
+
+function getSignupErrorMessage() {
+  return 'We could not create your account. Please check the details and try again.';
 }
 
 function Field({
