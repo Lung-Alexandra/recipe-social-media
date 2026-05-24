@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Icon } from './Icon.jsx';
+import { googleAuthUrl } from '../api.js';
 
 const emptySignupForm = {
   username: '',
@@ -72,7 +73,7 @@ export function AuthScreen({
   }
 
   function continueWithGoogle() {
-    window.location.assign('/auth/google');
+    window.location.assign(googleAuthUrl);
   }
 
   return (

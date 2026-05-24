@@ -1,5 +1,7 @@
 # Summary 
-    TO DO
+Recipe Social Media is a full-stack social platform focused on cooking content. Users can create accounts, sign in with email and password or Google OAuth2, publish recipe posts, browse a shared feed, visit profiles, and interact through likes and comments. The application combines social features with a recipe-sharing workflow.
+
+From a technical perspective, the project covers a complete JavaScript full-stack setup. The backend is built with Node.js and Express, uses GraphQL for the API layer, Sequelize for database access, PostgreSQL for persistence, JWT for authentication, and Google OAuth2 for third-party login. The frontend is built with React and Vite and communicates with the backend through GraphQL requests. Overall, the application highlights practical concepts such as authentication and authorization, OAuth callback handling, relational database modeling, protected routes, CORS configuration, and the separation between frontend and backend in production.
 
 # Setup
 

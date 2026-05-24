@@ -1,4 +1,12 @@
-const endpoint = import.meta.env.VITE_GRAPHQL_URL || '/graphql';
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+
+const endpoint =
+  import.meta.env.VITE_GRAPHQL_URL ||
+  (apiBaseUrl ? `${apiBaseUrl}/graphql` : '/graphql');
+
+const googleAuthUrl =
+  import.meta.env.VITE_GOOGLE_AUTH_URL ||
+  (apiBaseUrl ? `${apiBaseUrl}/auth/google` : '/auth/google');
 
 export async function graphqlRequest(query, variables = {}, token) {
   const response = await fetch(endpoint, {
@@ -23,3 +31,4 @@ export async function graphqlRequest(query, variables = {}, token) {
 }
 
 export { endpoint };
+export { googleAuthUrl };
