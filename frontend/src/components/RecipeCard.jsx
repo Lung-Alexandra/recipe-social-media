@@ -29,6 +29,7 @@ export function RecipeCard({
   const hasSearch = searchTerm.trim().length > 0;
   const showRecipeImage = recipe.imageUrl && !imageFailed;
   const isAuthor = String(currentUserId || '') === String(recipe.user_id || '');
+  const isAuthenticated = Boolean(currentUserId);
 
   useEffect(() => {
     setImageFailed(false);
@@ -49,6 +50,8 @@ export function RecipeCard({
 
   async function submitComment(event) {
     event.preventDefault();
+    if (!isAuthenticated) return;
+
     const text = commentText.trim();
     if (!text) return;
 
@@ -243,6 +246,8 @@ export function RecipeCard({
           <button
             type="button"
             className={recipe.userLiked ? 'like-button active' : 'like-button'}
+            disabled={!isAuthenticated}
+            title={isAuthenticated ? 'Like recipe' : 'Login to like recipes'}
             onClick={() => onToggleLike(recipe)}
           >
             <Icon name="heart" />
@@ -256,17 +261,21 @@ export function RecipeCard({
 
         {commentsOpen ? (
           <section className="comments-block">
-            <form className="comment-form" onSubmit={submitComment}>
-              <input
-                value={commentText}
-                placeholder="Write a comment"
-                onChange={(event) => setCommentText(event.target.value)}
-              />
-              <button type="submit">
-                <Icon name="send" />
-                Send
-              </button>
-            </form>
+            {isAuthenticated ? (
+              <form className="comment-form" onSubmit={submitComment}>
+                <input
+                  value={commentText}
+                  placeholder="Write a comment"
+                  onChange={(event) => setCommentText(event.target.value)}
+                />
+                <button type="submit">
+                  <Icon name="send" />
+                  Send
+                </button>
+              </form>
+            ) : (
+              <p className="guest-note">Login to write comments.</p>
+            )}
             <div className="comment-list">
               {(comments?.comments || []).map((comment) => (
                 <article className="comment-item" key={comment.id}>

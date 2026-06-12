@@ -4,17 +4,15 @@ import { Icon } from './Icon.jsx';
 export function AppShell({
   activeView,
   currentUser,
+  isAuthenticated,
   onChangeView,
+  onLogin,
   onLogout,
   onToggleTheme,
   theme,
   children,
 }) {
-  const displayName = currentUser?.username || 'User';
-  const navigation = [
-    { id: 'feed', label: 'Posts', icon: 'feed' },
-    { id: 'profile', label: 'Profile', icon: 'user' },
-  ];
+  const displayName = currentUser?.username || 'Guest';
 
   return (
     <div className="app-shell">
@@ -28,28 +26,50 @@ export function AppShell({
           <Avatar imageUrl={currentUser?.profile_picture} label={displayName} />
           <div>
             <strong>{displayName}</strong>
-            <span>{currentUser?.email || 'Authenticated'}</span>
+            <span>{currentUser?.email || 'Read-only browsing'}</span>
           </div>
         </div>
 
-        <nav className="side-nav" aria-label="Main navigation">
-          {navigation.map((item) => (
+        {isAuthenticated ? (
+          <nav className="side-nav" aria-label="Main navigation">
             <button
-              key={item.id}
               type="button"
-              className={activeView === item.id ? 'active' : ''}
-              onClick={() => onChangeView(item.id)}
+              className={activeView === 'feed' ? 'active' : ''}
+              onClick={() => onChangeView('feed')}
             >
-              <Icon name={item.icon} />
-              {item.label}
+              <Icon name="feed" />
+              Posts
             </button>
-          ))}
-        </nav>
+            <button
+              type="button"
+              className={activeView === 'profile' ? 'active' : ''}
+              onClick={() => onChangeView('profile')}
+            >
+              <Icon name="user" />
+              Profile
+            </button>
+          </nav>
+        ) : null}
 
-        <button type="button" className="secondary-button" onClick={onLogout}>
-          <Icon name="logout" />
-          Logout
-        </button>
+        {isAuthenticated ? (
+          <button
+            type="button"
+            className="secondary-button session-button"
+            onClick={onLogout}
+          >
+            <Icon name="logout" />
+            Logout
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="secondary-button session-button"
+            onClick={onLogin}
+          >
+            <Icon name="login" />
+            Login
+          </button>
+        )}
 
         <button
           type="button"

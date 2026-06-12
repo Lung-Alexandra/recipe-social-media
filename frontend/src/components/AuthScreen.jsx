@@ -12,6 +12,7 @@ const emptySignupForm = {
 
 export function AuthScreen({
   isLoading,
+  onContinueAsGuest,
   onLogin,
   onSignup,
   onToggleTheme,
@@ -84,14 +85,24 @@ export function AuthScreen({
             <span className="eyebrow">Recipe Social Media</span>
             <strong>Cook. Share. React.</strong>
           </div>
-          <button
-            type="button"
-            className="secondary-button auth-theme-button"
-            onClick={onToggleTheme}
-          >
-            <Icon name={theme === 'dark' ? 'sun' : 'moon'} />
-            {theme === 'dark' ? 'Light' : 'Dark'}
-          </button>
+          <div className="auth-topbar-actions">
+            <button
+              type="button"
+              className="secondary-button auth-theme-button"
+              onClick={onToggleTheme}
+            >
+              <Icon name={theme === 'dark' ? 'sun' : 'moon'} />
+              {theme === 'dark' ? 'Light' : 'Dark'}
+            </button>
+            <button
+              type="button"
+              className="secondary-button auth-theme-button"
+              onClick={onContinueAsGuest}
+            >
+              <Icon name="feed" />
+              Continue as guest
+            </button>
+          </div>
         </header>
 
         <div className="auth-copy">
@@ -100,8 +111,8 @@ export function AuthScreen({
           </div>
           <h1>{mode === 'login' ? 'Login' : 'Create account'}</h1>
           <p>
-            Sign in to explore the recipe feed, publish posts, and interact
-            with likes or comments.
+            Browse and sort recipes as a guest, or sign in to publish posts,
+            like recipes, and write comments.
           </p>
           <div className="auth-highlights">
             <span>Live feed</span>
@@ -238,6 +249,10 @@ function Field({
   required = false,
   textarea = false,
 }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = type === 'password';
+  const inputType = isPassword && showPassword ? 'text' : type;
+
   return (
     <label className="field">
       <span>
@@ -252,12 +267,24 @@ function Field({
           onChange={(event) => onChange(event.target.value)}
         />
       ) : (
-        <input
-          type={type}
-          value={value}
-          required={required}
-          onChange={(event) => onChange(event.target.value)}
-        />
+        <span className={isPassword ? 'password-input-wrap' : undefined}>
+          <input
+            type={inputType}
+            value={value}
+            required={required}
+            onChange={(event) => onChange(event.target.value)}
+          />
+          {isPassword ? (
+            <button
+              type="button"
+              className="password-toggle"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              onClick={() => setShowPassword((current) => !current)}
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          ) : null}
+        </span>
       )}
     </label>
   );

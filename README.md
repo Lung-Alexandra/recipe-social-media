@@ -56,8 +56,6 @@ Demo users:
 - ```mihai.demo@example.com```
 - ```irina.demo@example.com```
 
-All demo users use this password:
-``` Demo123456! ```
 
 # Migrations
 1. Make sure the project setup is finished

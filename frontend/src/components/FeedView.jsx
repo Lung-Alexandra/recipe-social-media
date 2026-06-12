@@ -9,6 +9,7 @@ export function FeedView({
   feedError,
   filters,
   isLoading,
+  isAuthenticated,
   onAddComment,
   onClearFilters,
   onDeleteRecipe,
@@ -54,7 +55,12 @@ export function FeedView({
           <h2>Recipe feed</h2>
         </div>
         <div className="toolbar-actions">
-          <button type="button" onClick={onOpenCreate}>
+          <button
+            type="button"
+            disabled={!isAuthenticated}
+            title={isAuthenticated ? 'Create recipe' : 'Login to create recipes'}
+            onClick={onOpenCreate}
+          >
             <Icon name="plus" />
             New recipe
           </button>

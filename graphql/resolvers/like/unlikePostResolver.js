@@ -1,13 +1,12 @@
 const db = require('../../../models');
+const requireAuthenticatedUser = require('../requireAuthenticatedUser');
 
 const unlikePostResolver = async (_, { recipe_id }, context) => {
-    if (!context?.user_id) {
-        throw new Error('Authentication required');
-    }
+    const user_id = requireAuthenticatedUser(context);
 
     const {count, rows} = await db.Like.findAndCountAll(
         {where: {
-            user_id: context.user_id,
+            user_id,
             recipe_id: recipe_id,
         }
     });
@@ -26,7 +25,7 @@ const unlikePostResolver = async (_, { recipe_id }, context) => {
         return true;
 
     } catch {
-        throw new Error(`Error deleting like from user: ${context.user_id} for post: ${recipe_id}`);
+        throw new Error(`Error deleting like from user: ${user_id} for post: ${recipe_id}`);
     }
 }
 

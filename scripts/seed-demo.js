@@ -7,7 +7,7 @@ const db = require('../models');
 
 db.sequelize.options.logging = false;
 
-const password = 'Demo123456!';
+const password = process.env.DEMO_PASSWORD || 'Demo12345!';
 
 const users = [
   {

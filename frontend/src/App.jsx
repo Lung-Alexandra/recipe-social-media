@@ -18,6 +18,16 @@ function App() {
   const theme = useTheme();
 
   useEffect(() => {
+    if (activeView === 'auth' && auth.isAuthenticated) {
+      setActiveView('feed');
+    }
+
+    if (!auth.isAuthenticated && ['create', 'profile'].includes(activeView)) {
+      setActiveView('feed');
+    }
+  }, [activeView, auth.isAuthenticated]);
+
+  useEffect(() => {
     if (activeView === 'profile' && auth.userId) {
       publicProfile.loadProfile(auth.userId);
     }
@@ -29,6 +39,8 @@ function App() {
   }
 
   async function toggleLike(recipe) {
+    if (!auth.isAuthenticated) return;
+
     publicProfile.updateProfileRecipe(recipe);
     await feed.toggleLike(recipe);
   }
@@ -43,12 +55,19 @@ function App() {
     publicProfile.removeProfileRecipe(recipeId);
   }
 
-  if (!auth.isAuthenticated) {
+  if (activeView === 'auth' && !auth.isAuthenticated) {
     return (
       <AuthScreen
         isLoading={auth.isAuthLoading}
-        onLogin={auth.login}
-        onSignup={auth.signup}
+        onContinueAsGuest={() => setActiveView('feed')}
+        onLogin={async (credentials) => {
+          await auth.login(credentials);
+          setActiveView('feed');
+        }}
+        onSignup={async (user) => {
+          await auth.signup(user);
+          setActiveView('feed');
+        }}
         onToggleTheme={theme.toggleTheme}
         theme={theme.theme}
       />
@@ -59,7 +78,9 @@ function App() {
     <AppShell
       activeView={activeView}
       currentUser={auth.currentUser}
+      isAuthenticated={auth.isAuthenticated}
       onChangeView={setActiveView}
+      onLogin={() => setActiveView('auth')}
       onLogout={auth.logout}
       onToggleTheme={theme.toggleTheme}
       theme={theme.theme}
@@ -71,6 +92,7 @@ function App() {
           currentUserId={auth.userId}
           feedError={feed.feedError}
           isLoading={feed.isFeedLoading}
+          isAuthenticated={auth.isAuthenticated}
           recipes={feed.recipes}
           page={feed.page}
           pageSize={feed.pageSize}

@@ -37,8 +37,6 @@ export function useFeed(token) {
   const [filters, setFilters] = useState(defaultFilters);
 
   async function loadTags() {
-    if (!token) return;
-
     try {
       const data = await graphqlRequest(TAGS_QUERY, {}, token);
       setTags(data.tags || []);
@@ -48,8 +46,6 @@ export function useFeed(token) {
   }
 
   async function refreshFeed(nextPage = page, nextFilters = filters) {
-    if (!token) return;
-
     setIsFeedLoading(true);
     setFeedError('');
 
@@ -76,8 +72,6 @@ export function useFeed(token) {
   }
 
   useEffect(() => {
-    if (!token) return undefined;
-
     setIsFeedLoading(true);
     const refreshTimer = window.setTimeout(() => {
       refreshFeed(1, filters);
@@ -116,6 +110,10 @@ export function useFeed(token) {
   }
 
   async function createTag(tagName) {
+    if (!token) {
+      throw new Error('Sign in to create tags.');
+    }
+
     await graphqlRequest(
       CREATE_TAG_MUTATION,
       { tag: { tag_name: tagName } },
@@ -125,11 +123,19 @@ export function useFeed(token) {
   }
 
   async function createRecipe(recipe) {
+    if (!token) {
+      throw new Error('Sign in to publish recipes.');
+    }
+
     await graphqlRequest(CREATE_RECIPE_MUTATION, { recipe }, token);
     await refreshFeed(1, filters);
   }
 
   async function updateRecipe(recipeId, recipe) {
+    if (!token) {
+      throw new Error('Sign in to edit recipes.');
+    }
+
     const data = await graphqlRequest(
       UPDATE_RECIPE_MUTATION,
       { id: String(recipeId), recipe },
@@ -140,6 +146,10 @@ export function useFeed(token) {
   }
 
   async function deleteRecipe(recipeId) {
+    if (!token) {
+      throw new Error('Sign in to delete recipes.');
+    }
+
     await graphqlRequest(
       DELETE_RECIPE_MUTATION,
       { id: String(recipeId) },
@@ -150,6 +160,11 @@ export function useFeed(token) {
   }
 
   async function toggleLike(recipe) {
+    if (!token) {
+      setFeedError('Sign in to like recipes.');
+      return;
+    }
+
     const recipe_id = toRecipeId(recipe.id);
 
     setRecipes((current) =>
@@ -192,6 +207,10 @@ export function useFeed(token) {
   }
 
   async function addComment(recipeId, commentText) {
+    if (!token) {
+      throw new Error('Sign in to comment on recipes.');
+    }
+
     await graphqlRequest(
       ADD_COMMENT_MUTATION,
       {

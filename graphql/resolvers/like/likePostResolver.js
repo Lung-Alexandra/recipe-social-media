@@ -1,13 +1,12 @@
 const db = require('../../../models');
+const requireAuthenticatedUser = require('../requireAuthenticatedUser');
 
 const likePostResolver = async (_, { recipe_id }, context) => {
-    if (!context?.user_id) {
-        throw new Error('Authentication required');
-    }
+    const user_id = requireAuthenticatedUser(context);
 
     const [like] = await db.Like.findOrCreate({
         where: {
-            user_id: context.user_id,
+            user_id,
             recipe_id,
         },
         defaults: {

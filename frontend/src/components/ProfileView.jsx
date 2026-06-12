@@ -227,6 +227,10 @@ function Field({
   required = false,
   textarea = false,
 }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = type === 'password';
+  const inputType = isPassword && showPassword ? 'text' : type;
+
   return (
     <label className="field">
       <span>
@@ -241,12 +245,24 @@ function Field({
           onChange={(event) => onChange(event.target.value)}
         />
       ) : (
-        <input
-          type={type}
-          value={value}
-          required={required}
-          onChange={(event) => onChange(event.target.value)}
-        />
+        <span className={isPassword ? 'password-input-wrap' : undefined}>
+          <input
+            type={inputType}
+            value={value}
+            required={required}
+            onChange={(event) => onChange(event.target.value)}
+          />
+          {isPassword ? (
+            <button
+              type="button"
+              className="password-toggle"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              onClick={() => setShowPassword((current) => !current)}
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          ) : null}
+        </span>
       )}
     </label>
   );
