@@ -1,6 +1,9 @@
 const db = require('../../../models');
+const requireAuthenticatedUser = require('../requireAuthenticatedUser');
 
-const createTagResolver = async (_, { tag }) => {
+const createTagResolver = async (_, { tag }, context) => {
+    requireAuthenticatedUser(context);
+
     const tagName = tag?.tag_name?.trim();
 
     if (!tagName) {

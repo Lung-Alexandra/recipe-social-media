@@ -113,7 +113,7 @@ function App() {
         />
       ) : null}
 
-      {activeView === 'create' ? (
+      {activeView === 'create' && auth.isAuthenticated ? (
         <RecipeComposer
           onCreateRecipe={feed.createRecipe}
           onCreateTag={feed.createTag}

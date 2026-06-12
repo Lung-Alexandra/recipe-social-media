@@ -55,15 +55,16 @@ export function FeedView({
           <h2>Recipe feed</h2>
         </div>
         <div className="toolbar-actions">
-          <button
-            type="button"
-            disabled={!isAuthenticated}
-            title={isAuthenticated ? 'Create recipe' : 'Login to create recipes'}
-            onClick={onOpenCreate}
-          >
-            <Icon name="plus" />
-            New recipe
-          </button>
+          {isAuthenticated ? (
+            <button
+              type="button"
+              title="Create recipe"
+              onClick={onOpenCreate}
+            >
+              <Icon name="plus" />
+              New recipe
+            </button>
+          ) : null}
           <button
             type="button"
             className="secondary-button"
@@ -192,7 +193,9 @@ export function FeedView({
 
           {!isLoading && recipes.length === 0 ? (
             <p className="empty-feed">
-              No recipes yet. Publish the first one from New recipe.
+              {isAuthenticated
+                ? 'No recipes yet. Publish the first one from New recipe.'
+                : 'No recipes yet.'}
             </p>
           ) : null}
 

@@ -1,11 +1,10 @@
 const db = require('../../../models');
+const requireAuthenticatedUser = require('../requireAuthenticatedUser');
 
 
 
 const createRecipeResolver = async (_, { recipe },context) => {
-    if (!context?.user_id) {
-        throw new Error('Authentication required');
-    }
+    const user_id = requireAuthenticatedUser(context);
 
     const { title,
         description,
@@ -23,7 +22,7 @@ const createRecipeResolver = async (_, { recipe },context) => {
         instructions,
         imageUrl,
         dateCreated,
-        user_id:context.user_id
+        user_id,
     });
 
     let {tags = []} = recipe
